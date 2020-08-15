@@ -12,7 +12,7 @@ DO_BONUS = 0
 
 ifeq ($(DO_BONUS), 1)
 	MAIN_OBJECT = $(MAIN_BONUS:.c=.o)
-	OBJECTS = $(ASM_BONUS_SOURCES:.s=.o)
+	OBJECTS = $(ASM_SOURCES:.s=.o) $(ASM_BONUS_SOURCES:.s=.o)
 else
 	MAIN_OBJECT = $(MAIN:.c=.o)
 	OBJECTS = $(ASM_SOURCES:.s=.o)
@@ -24,8 +24,11 @@ $(NAME): $(OBJECTS)
 	ar cr $(NAME) $(OBJECTS)
 	ranlib $(NAME)
 
-$(TEST): $(NAME) $(MAIN_OBJECT)
+test: $(NAME) $(MAIN_OBJECT)
 	$(CC) -no-pie $(MAIN_OBJECT) $(NAME) -o $(TEST)
+
+bonus_test:
+	$(MAKE) test DO_BONUS=1
 
 %.o: %.s
 	$(NASM) $(NASM_FLAGS) $< -o $@
@@ -46,4 +49,4 @@ fclean:
 
 re: fclean all
 
-.PHONY: all clean fclean bonus re
+.PHONY: all clean fclean bonus re test bonus_test
